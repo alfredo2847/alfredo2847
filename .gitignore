@@ -1,2 +1,7 @@
 node_modules/
 carruseles/src/_*.html
+
+# Motion Director: artefactos de render (se regeneran con md.sh)
+**/build/
+videos/*/final.mp4
+__pycache__/

@@ -1,0 +1,6 @@
+# Una frase por línea = un beat. Línea en blanco = pausa corta. [pausa 0.8] = pausa exacta.
+# Gancho en la primera línea (< 2 s). Cierra con la llamada a la acción.
+Esto es una plantilla de Motion Director.
+Cada frase de este guion es un plano.
+Las palabras clave entran justo cuando la voz las dice.
+Cambia el guion y dirige tu propio vídeo.

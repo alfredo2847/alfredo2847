@@ -1,0 +1,8 @@
+/* Fuentes empaquetadas (licencia SIL OFL). Úsalas sin depender de internet. */
+@font-face { font-family: 'Barlow Condensed'; font-weight: 600; src: url(BarlowCondensed-600.ttf); }
+@font-face { font-family: 'Barlow Condensed'; font-weight: 700; src: url(BarlowCondensed-700.ttf); }
+@font-face { font-family: 'Barlow Condensed'; font-weight: 800; src: url(BarlowCondensed-800.ttf); }
+@font-face { font-family: 'Inter'; font-weight: 400; src: url(Inter-400.ttf); }
+@font-face { font-family: 'Inter'; font-weight: 700; src: url(Inter-700.ttf); }
+@font-face { font-family: 'Inter'; font-weight: 900; src: url(Inter-900.otf); }
+@font-face { font-family: 'JetBrains Mono'; font-weight: 700; src: url(JetBrainsMono-700.ttf); }

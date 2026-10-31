@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>VitalPet — Motion Director demo</title>
+<link rel="stylesheet" href="fonts/fonts.css">
+<style>
+  :root { --bg:#0e0d0c; --cream:#f2ede4; --ink:#141312; --red:#ff3b30; --blue:#2f7bff; --yellow:#ffd60a; }
+  #stage { font-family: 'Inter', sans-serif; color: #fff; }
+  #world, .scene, .cam { position: absolute; inset: 0; }
+  .h { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; text-transform: uppercase; line-height: .86; letter-spacing: -.005em; }
+  .k { font: 700 34px/1 'JetBrains Mono', monospace; letter-spacing: .12em; text-transform: uppercase; }
+  .ph { position: absolute; overflow: hidden; }
+  .ph img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .center { position: absolute; left: 80px; right: 80px; text-align: center; }
+  .vign::after { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 45%, transparent 35%, rgba(0,0,0,.75) 100%); }
+
+  /* S1 gancho */
+  #s1 { background: var(--bg); }
+  #s1 .ph { inset: 0; }
+  #s1 .ph img { filter: grayscale(1) brightness(.35) contrast(1.1); }
+  #s1 .t1 { top: 640px; font-size: 128px; color: #fff; }
+  #s1 .t2 { top: 900px; font-size: 300px; color: var(--red); }
+
+  /* S2 contador */
+  #s2 { background: var(--red); color: var(--ink); }
+  #s2 .num { top: 560px; font-size: 520px; }
+  #s2 .eur { font-size: 300px; }
+  #s2 .sub { top: 1060px; font-size: 140px; }
+  #s2 .k { position: absolute; top: 430px; font-size: 46px; left: 0; right: 0; text-align: center; }
+
+  /* S3 solo en filtros */
+  #s3 { background: #000; }
+  #s3 .ph { inset: 0; }
+  #s3 .ph img { object-position: 8% 50%; }
+  #s3 .t { top: 300px; font-size: 190px; color: #fff; text-shadow: 0 10px 40px rgba(0,0,0,.6); }
+
+  /* S4 tres pasos */
+  #s4 { background: var(--bg); }
+  #s4 .hd { top: 190px; font-size: 92px; color: #fff; }
+  #s4 .step { position: absolute; left: 70px; right: 70px; height: 360px; border-radius: 28px; overflow: hidden; }
+  #s4 .step img { width: 100%; height: 100%; object-fit: cover; }
+  #s4 .step .lbl { position: absolute; left: 30px; bottom: 26px; font-size: 110px; color: #fff; text-shadow: 0 6px 30px rgba(0,0,0,.7); }
+  #s4 .n { position: absolute; right: 30px; top: 24px; background: var(--red); color: #fff; padding: 10px 18px; border-radius: 12px; }
+
+  /* S5 solución */
+  #s5 { background: var(--cream); color: var(--ink); }
+  #s5 .ph { left: 140px; right: 140px; top: 520px; height: 1180px; border-radius: 40px; }
+  #s5 .brand { top: 190px; font-size: 200px; }
+  #s5 .sin { top: 380px; font-size: 120px; }
+  #s5 .sin span.hl { padding: 0 .12em; }
+  #s5 .stamp { position: absolute; right: 70px; top: 1200px; width: 300px; height: 300px; border-radius: 50%; background: var(--blue); color: #fff;
+               display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 20px 60px rgba(47,123,255,.45); }
+  #s5 .stamp b { font: 800 150px/0.85 'Barlow Condensed'; }
+  #s5 .stamp small { font: 700 30px/1 'Inter'; text-transform: uppercase; letter-spacing: .06em; }
+
+  /* S6 agua */
+  #s6 { background: #020812; }
+  #s6 .ph { inset: 0; }
+  #s6 .ph img { object-position: 50% 50%; }
+  .tag { position: absolute; padding: 18px 28px; border-radius: 999px; font: 800 48px/1 'Inter'; display: flex; gap: 14px; align-items: center; }
+  .tag i { width: 22px; height: 22px; border-radius: 50%; display: inline-block; }
+  #s6 .used { left: 90px; top: 420px; font-size: 56px; background: rgba(20,20,20,.85); color: #fff; }
+  #s6 .used i { background: #9a8f80; }
+  #s6 .clean { right: 90px; top: 580px; font-size: 56px; background: var(--blue); color: #fff; }
+  #s6 .clean i { background: #bfe0ff; }
+
+  /* S7 pantalla */
+  #s7 { background: var(--cream); }
+  #s7 .ph { left: -200px; right: -200px; top: 300px; height: 900px; }
+  #s7 .chip { left: 50%; top: 360px; margin-left: -230px; width: 460px; justify-content: center; background: var(--ink); color: #fff; font-size: 64px; }
+  #s7 .ring { position: absolute; width: 140px; height: 140px; border-radius: 50%; border: 8px solid var(--blue); left: 520px; top: 760px; }
+
+  /* S8 batería */
+  #s8 { background: #0b0b0d; }
+  #s8 .ph { left: 0; right: 0; bottom: 0; height: 1100px; }
+  #s8 .ph::before { content: ''; position: absolute; inset: 0; z-index: 1; background: linear-gradient(#0b0b0d 0%, transparent 35%); }
+  #s8 .num { top: 250px; font-size: 420px; color: #fff; }
+  #s8 .sub { top: 610px; font-size: 110px; color: var(--yellow); }
+  #s8 .bat { position: absolute; left: 290px; top: 760px; width: 480px; height: 110px; border: 8px solid #fff; border-radius: 22px; padding: 10px; z-index: 2; }
+  #s8 .bat::after { content: ''; position: absolute; right: -30px; top: 30px; width: 18px; height: 34px; background: #fff; border-radius: 0 8px 8px 0; }
+  #s8 .fill { height: 100%; background: var(--yellow); border-radius: 10px; transform-origin: left; }
+
+  /* S9 cierre */
+  #s9 { background: var(--cream); color: var(--ink); }
+  #s9 .ph { left: 120px; right: 120px; top: 260px; height: 840px; border-radius: 48px; }
+  #s9 .brand { top: 1170px; font-size: 230px; }
+  #s9 .sub { top: 1390px; font: 700 70px/1.1 'Inter'; letter-spacing: -.02em; }
+  #s9 .sub b { color: var(--blue); }
+</style>
+</head>
+<body>
+<div id="stage"><div id="world">
+
+  <section class="scene" id="s1"><div class="cam" id="c1">
+    <div class="ph vign"><img src="img/conv3.jpg"></div>
+    <div class="center h t1" id="s1a">Tu fuente te está costando</div>
+    <div class="center h t2" id="s1b">dinero.</div>
+  </div></section>
+
+  <section class="scene" id="s2"><div class="cam" id="c2">
+    <div class="k">Solo en recambios</div>
+    <div class="center h num"><span id="cnt">0</span><span class="eur">€</span></div>
+    <div class="center h sub" id="s2b">al año.</div>
+  </div></section>
+
+  <section class="scene" id="s3"><div class="cam" id="c3">
+    <div class="ph vign"><img src="img/conv3.jpg"></div>
+    <div class="center h t" id="s3a">Solo en filtros.</div>
+  </div></section>
+
+  <section class="scene" id="s4"><div class="cam" id="c4">
+    <div class="center h hd" id="s4a">Y cada pocas semanas:</div>
+    <div class="step" id="p1" style="top:340px"><img src="img/conv1.jpg"><div class="h lbl">Desmontar</div><div class="k n">01</div></div>
+    <div class="step" id="p2" style="top:730px"><img src="img/conv2.jpg"><div class="h lbl">Lavar</div><div class="k n">02</div></div>
+    <div class="step" id="p3" style="top:1120px"><img src="img/conv4.jpg"><div class="h lbl">Rellenar</div><div class="k n">03</div></div>
+  </div></section>
+
+  <section class="scene" id="s5"><div class="cam" id="c5">
+    <div class="ph" id="s5p"><img src="img/vertical-claro.jpg"></div>
+    <div class="center h brand" id="s5a">VitalPet</div>
+    <div class="center h sin"><span id="s5b">no lleva</span> <span class="hl" id="s5c">filtro.</span></div>
+    <div class="stamp" id="stamp"><b>0 €</b><small>en filtros</small></div>
+  </div></section>
+
+  <section class="scene" id="s6"><div class="cam" id="c6">
+    <div class="ph vign"><img src="img/tubo.jpg"></div>
+    <div class="tag used" id="tg1"><i></i>Agua usada → fuera</div>
+    <div class="tag clean" id="tg2"><i></i>Agua limpia</div>
+  </div></section>
+
+  <section class="scene" id="s7"><div class="cam" id="c7">
+    <div class="ph"><img src="img/pantalla.jpg"></div>
+    <div class="tag chip" id="chip">Cada <span id="hrs">2</span> h</div>
+    <div class="ring" id="ring"></div>
+  </div></section>
+
+  <section class="scene" id="s8"><div class="cam" id="c8">
+    <div class="ph"><img src="img/vertical-oscuro.jpg"></div>
+    <div class="center h num" id="n90">0</div>
+    <div class="center h sub" id="s8b">días de batería</div>
+    <div class="bat"><div class="fill" id="fill"></div></div>
+  </div></section>
+
+  <section class="scene" id="s9"><div class="cam" id="c9">
+    <div class="ph" id="s9p"><img src="img/gato.jpg"></div>
+    <div class="center h brand" id="s9a">VitalPet.</div>
+    <div class="center sub" id="s9b">Programa y <b>olvídate.</b></div>
+  </div></section>
+
+</div></div>
+
+<script src="voice.js"></script>
+<script src="motion.js"></script>
+<script>
+  // ---------- Montaje ----------
+  M.setup({ music: 'bed:pulse', bpm: 104, musicDb: -19, tail: 1.3, background: '#0e0d0c' });
+  const L = M.line, at = M.at;
+  const cut = (i) => L(i).start - 0.05;          // cortamos 1–2 fotogramas antes de que hable
+  const T = [0, cut(1), cut(2), cut(3), cut(4), cut(5), cut(6), cut(7), cut(8), M.duration];
+
+  // ---------- S1 · Gancho ----------
+  M.scene('#s1', T[0], T[1], (lt) => M.tf('#s1 .ph', { s: M.tw(lt, 0, 2.2, 1.18, 1.0, 'outCubic') }));
+  M.reveal('#s1a', { at: L(0).start, sync: true, style: 'rise', dur: 0.35 });
+  M.reveal('#s1b', { times: [at('dinero')], style: 'slam' });
+  M.camera('#c1', { shakes: [{ t: at('dinero'), amp: 26 }] });
+  M.cue(at('dinero'), 'hit', 0);
+
+  // ---------- S2 · 0 → 70 € ----------
+  M.scene('#s2', T[1], T[2]);
+  M.transition(T[1], 'pixels', { colors: ['#ff3b30', '#ffffff', '#141312', '#b3001b'] });
+  M.add((t) => {
+    const v = M.keys(t, [[at('cincuenta'), 0], [at('cincuenta') + 0.35, 50, 'outExpo'], [at('setenta'), 50], [at('setenta') + 0.35, 70, 'outExpo']]);
+    document.getElementById('cnt').textContent = Math.round(v);
+  });
+  M.reveal('#s2 .k', { at: T[1] + 0.1, style: 'type', sfx: 'type' });
+  M.reveal('#s2b', { at: at('al'), sync: true, style: 'pop' });
+  M.camera('#c2', { punch: [at('cincuenta'), { t: at('setenta'), amt: 0.1 }], keys: [[T[1], { s: 1.04 }], [T[2], { s: 1 }]] });
+  M.cue(at('cincuenta'), 'tick', 2); M.cue(at('setenta'), 'bass', -2);
+
+  // ---------- S3 · Solo en filtros ----------
+  M.scene('#s3', T[2], T[3], (lt) => M.tf('#s3 .ph', { s: M.tw(lt, 0, T[3] - T[2], 1.0, 1.12, 'linear') }));
+  M.transition(T[2], 'whip');
+  M.reveal('#s3a', { at: L(2).start, sync: true, style: 'slam' });
+  M.camera('#c3', { shakes: [{ t: at('filtros'), amp: 14 }] });
+  M.cue(at('filtros'), 'hit', -6);
+
+  // ---------- S4 · Desmontar / lavar / rellenar ----------
+  M.scene('#s4', T[3], T[4]);
+  M.transition(T[3], 'glitch');
+  M.reveal('#s4a', { at: T[3] + 0.02, stagger: 0.05, style: 'rise', dur: 0.3 }); // visible desde el corte: nunca un plano vacío
+  ['desmontar', 'lavar', 'rellenar'].forEach((w, i) => {
+    const t0 = at(w) - 0.04, el = '#p' + (i + 1);
+    M.add((t) => {
+      const sp = M.spring(t - t0, { stiffness: 240, damping: 17 });
+      M.tf(el, { x: (1 - sp) * (i % 2 ? 1100 : -1100), r: (1 - sp) * (i % 2 ? 6 : -6), o: t >= t0 ? 1 : 0 });
+    });
+    M.cue(t0, 'swish', -2); M.cue(at(w), 'pop', -2);
+  });
+  M.camera('#c4', { keys: [[T[3], { s: 1, y: 0 }], [T[4], { s: 1.05, y: -20 }, 'linear']] });
+
+  // ---------- S5 · VitalPet no lleva filtro ----------
+  M.scene('#s5', T[4], T[5]);
+  M.transition(T[4], 'flash', { amt: 1 });
+  M.add((t) => { const sp = M.spring(t - T[4], { stiffness: 120, damping: 16 }); M.tf('#s5p', { y: (1 - sp) * 900, s: 0.9 + 0.1 * sp }); });
+  M.reveal('#s5a', { times: [at('vitalpet')], style: 'slam' });
+  M.reveal('#s5b', { at: at('no'), sync: true, style: 'pop' });
+  M.reveal('#s5c', { times: [at('filtro')], style: 'pop' });
+  M.highlight('#s5c', { at: at('filtro') + 0.15, color: '#2f7bff', height: '18%' });
+  M.add((t) => { const sp = M.spring(t - at('filtro') - 0.25, { stiffness: 300, damping: 12 }); M.tf('#stamp', { s: sp, r: (1 - sp) * -40 + 8, o: sp > 0 ? 1 : 0 }); });
+  M.cue(at('vitalpet'), 'boom', -4); M.cue(at('filtro') + 0.25, 'ding', 0);
+
+  // ---------- S6 · Tira / rellena ----------
+  M.scene('#s6', T[5], T[6], (lt) => M.tf('#s6 .ph', { s: M.tw(lt, 0, T[6] - T[5], 1.25, 1.05, 'outCubic') }));
+  M.transition(T[5], 'bars', { color: '#0b0b0d' });
+  M.add((t) => {
+    for (const [el, w, dx] of [['#tg1', 'usada', -1], ['#tg2', 'limpia', 1]]) {
+      const sp = M.spring(t - at(w), { stiffness: 260, damping: 16 });
+      M.tf(el, { x: (1 - sp) * 500 * dx, o: t >= at(w) ? 1 : 0 });
+    }
+  });
+  M.cue(at('usada'), 'pop', -3); M.cue(at('limpia'), 'shimmer', 0);
+
+  // ---------- S7 · Pantalla táctil ----------
+  M.scene('#s7', T[6], T[7], (lt) => M.tf('#s7 .ph', { s: M.tw(lt, 0, T[7] - T[6], 1.0, 1.15, 'inOutCubic') }));
+  M.transition(T[6], 'iris', { color: '#141312' });
+  M.add((t) => {
+    const sp = M.spring(t - at('cada', 2), { stiffness: 260, damping: 15 });
+    M.tf('#chip', { s: sp, o: sp > 0 ? 1 : 0 });
+    document.getElementById('hrs').textContent = t < at('horas') ? 2 : t < at('horas') + 0.25 ? 4 : 6;
+    const q = M.p(t, at('tactil'), at('tactil') + 0.6);
+    M.tf('#ring', { s: 0.3 + q * 1.4, o: q > 0 && q < 1 ? 1 - q : 0 });
+  });
+  M.cue(at('horas'), 'click', 2); M.cue(at('horas') + 0.25, 'click', 2); M.cue(at('tactil'), 'tick', 0);
+
+  // ---------- S8 · 90 días ----------
+  M.scene('#s8', T[7], T[8], (lt) => M.tf('#s8 .ph', { y: M.tw(lt, 0, 2.5, 120, 0, 'outCubic') }));
+  M.transition(T[7], 'zoom');
+  M.add((t) => {
+    const v = M.tw(t, at('noventa') - 0.9, at('noventa'), 0, 90, 'outCubic');
+    document.getElementById('n90').textContent = Math.round(v);
+    document.getElementById('fill').style.transform = `scaleX(${v / 90})`;
+  });
+  M.reveal('#s8b', { at: at('dias'), sync: true, style: 'rise' });
+  M.camera('#c8', { punch: [{ t: at('noventa'), amt: 0.08 }] });
+  M.cue(at('noventa'), 'riser', -2); M.cue(at('noventa'), 'hit', -5);
+
+  // ---------- S9 · Cierre (se sostiene ≥ 1,2 s) ----------
+  M.scene('#s9', T[8], T[9]);
+  M.transition(T[8], 'pixels', { colors: ['#f2ede4', '#2f7bff', '#141312'], cell: 120 });
+  M.add((t) => { const sp = M.spring(t - T[8], { stiffness: 140, damping: 18 }); M.tf('#s9p', { s: 0.85 + 0.15 * sp, o: M.p(t, T[8], T[8] + 0.2) }); });
+  M.reveal('#s9a', { times: [at('vitalpet', 2)], style: 'slam' });
+  M.reveal('#s9b', { at: at('programa'), sync: true, style: 'rise' });
+  M.cue(at('vitalpet', 2), 'hit', -4);
+
+  // ---------- Capa global ----------
+  M.captions({ y: 1300, skip: [[0, L(5).start], [L(7).start, 99]], active: '#ffd60a', bg: 'rgba(14,13,12,.88)' });
+  M.grain(0.04);
+</script>
+</body>
+</html>
