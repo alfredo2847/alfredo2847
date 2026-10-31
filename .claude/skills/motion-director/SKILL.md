@@ -16,7 +16,7 @@ El usuario pone el 25 %: **la idea, el gusto y las notas**. Pregunta por ellas; 
 
 | Pieza | Qué hace |
 |---|---|
-| `md.sh` | Atajos: `doctor`, `new`, `voz`, `mivoz`, `check`, `still`, `preview`, `final` |
+| `md.sh` | Atajos: `setup`, `doctor`, `new`, `voz`, `mivoz`, `check`, `still`, `preview`, `final` |
 | `motion.js` | Librería de animación determinista: escenas, texto cinético, cámara, transiciones, subtítulos, partículas, grano. API: `reference/motion-api.md` |
 | `tts.py` | Locución IA gratis (Edge TTS) desde `guion.txt` **con tiempos por palabra** → `voz.wav` + `voice.js` |
 | `transcribe.py` | Lo mismo pero con la voz grabada del usuario (Whisper) |
@@ -24,8 +24,11 @@ El usuario pone el 25 %: **la idea, el gusto y las notas**. Pregunta por ellas; 
 | `sfx.py` | 13 efectos sintetizados (whoosh, swish, pop, click, tick, type, hit, boom, bass, riser, glitch, ding, shimmer) + bases musicales sin copyright |
 | `mix.py` | Voz + efectos + música con ducking → -14 LUFS → `final.mp4` |
 
-`MD=<ruta de esta skill>/engine/md.sh` (en este repo: `.claude/skills/motion-director/engine/md.sh`).
-La primera vez ejecuta `bash $MD doctor`. Detrás de un proxy con CA propia, exporta `SSL_CERT_FILE` antes de `voz`.
+`MD=<carpeta que contiene este SKILL.md>/engine/md.sh` — la skill puede estar en `.claude/skills/`, en `~/.claude/skills/`
+o sincronizada desde claude.ai (`~/.claude/skills/synced/…/motion-director`); búscala si no la conoces:
+`find ~/.claude .claude -name md.sh -path '*motion-director*' 2>/dev/null | head -1`.
+**Siempre al empezar:** `bash $MD setup` (comprueba e instala lo que falte: numpy, edge-tts, Playwright; tarda segundos si ya está todo).
+Los proyectos de vídeo se crean en el repo del usuario (p. ej. `videos/<nombre>/`), nunca dentro de la carpeta de la skill.
 
 ## Flujo de trabajo
 
@@ -91,8 +94,10 @@ Luego llegan las **notas** del usuario. Tradúcelas a cambios concretos (tabla a
 | "Desincronizado" | Usa `M.at()` / `sync: true`; corta 1–2 fotogramas antes de la palabra, no después |
 | "Se ve genérico / IA" | Revisa § Anti-slop de `direccion.md`: una idea visual por plano, paleta corta, asimetría, fotos reales |
 
-**Memoria de gusto:** cuando una nota sea de gusto general (no de este vídeo), añádela a
-`reference/notas-del-director.md` con fecha. Léelo al empezar cada vídeo. Así cada arreglo vive dentro de la skill.
+**Memoria de gusto:** lee `reference/notas-del-director.md` al empezar cada vídeo. Cuando una nota del usuario sea de
+gusto general (no de este vídeo), añádela ahí con fecha. Si la skill está sincronizada desde claude.ai (ruta con `synced/`),
+ese archivo no persiste: apúntala también en `<repo>/.motion-director/notas.md` (léelo si existe) y dile al usuario
+que la incorpore a la skill (resubir el ZIP en claude.ai → Ajustes → Capacidades → Skills) para tenerla en todos sus repos.
 
 ## Reglas que no se negocian
 1. Todo es función de `t`. Prohibido CSS animation/transition, `setTimeout`, `Math.random()` (usa `M.rand`, `M.hash`, `M.noise`).
@@ -103,5 +108,6 @@ Luego llegan las **notas** del usuario. Tradúcelas a cambios concretos (tabla a
 6. Mira los fotogramas antes de entregar. Mide el audio si algo suena raro.
 
 ## Ejemplo completo
-`videos/vitalpet-demo/` en este repo: guion, voz, `scene.html` con 9 planos y 7 tipos de transición,
-`storyboard.md`. Úsalo como referencia de nivel y de estructura de código.
+`examples/vitalpet/` (dentro de esta skill): `guion.txt`, `storyboard.md` y `scene.html` con 9 planos y 7 tipos de
+transición. Léelo antes de escribir tu primera escena: es la referencia de nivel y de estructura de código.
+(Las fotos y la voz no van incluidas; el código es lo que importa.)

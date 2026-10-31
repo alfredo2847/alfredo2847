@@ -22,4 +22,4 @@ Preguntas para cada fila:
 4. ¿Texto cinético o subtítulos? (nunca ambos con las mismas palabras)
 5. ¿Qué suena y por qué? Si no hay movimiento que lo justifique, no suena.
 
-Ejemplo real completo: `videos/vitalpet-demo/storyboard.md`.
+Ejemplo real completo: `examples/vitalpet/storyboard.md`.

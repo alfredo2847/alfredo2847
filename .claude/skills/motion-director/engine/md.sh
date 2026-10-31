@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # md.sh — atajos del pipeline de Motion Director.
 #
-#   md.sh doctor                 comprueba dependencias
+#   md.sh setup                  instala lo que falte (numpy, edge-tts, Playwright) y comprueba
+#   md.sh doctor                 solo comprueba dependencias
 #   md.sh new <proyecto>         crea un proyecto desde la plantilla
 #   md.sh voz <proyecto> [...]   locución + tiempos por palabra desde guion.txt (args extra → tts.py)
 #   md.sh mivoz <proyecto> <audio>  usa tu propia grabación (Whisper)
@@ -15,6 +16,17 @@ SKILL="$(dirname "$HERE")"
 cmd="${1:-help}"; shift || true
 
 case "$cmd" in
+  setup)
+    if ! command -v ffmpeg >/dev/null; then
+      if command -v brew >/dev/null; then brew install ffmpeg || true
+      elif command -v apt-get >/dev/null; then sudo -n apt-get install -y ffmpeg 2>/dev/null || apt-get install -y ffmpeg || true; fi
+    fi
+    python3 -c "import numpy" 2>/dev/null || python3 -m pip install -q numpy 2>/dev/null || python3 -m pip install -q --user --break-system-packages numpy
+    python3 -c "import edge_tts" 2>/dev/null || python3 -m pip install -q edge-tts 2>/dev/null || python3 -m pip install -q --user --break-system-packages edge-tts
+    if ! node -e "require('playwright')" 2>/dev/null; then
+      npm i -g playwright >/dev/null 2>&1 && npx -y playwright install chromium >/dev/null 2>&1 || true
+    fi
+    bash "$0" doctor ;;
   doctor)
     ok=1
     command -v ffmpeg >/dev/null && echo "✔ ffmpeg" || { echo "✖ ffmpeg (brew install ffmpeg / apt install ffmpeg)"; ok=0; }
@@ -41,5 +53,5 @@ case "$cmd" in
   final)
     d="${1:?proyecto}"; cp "$HERE/motion.js" "$d/motion.js"
     node "$HERE/render.js" "$d" && python3 "$HERE/mix.py" "$d" ;;
-  *) sed -n '2,13p' "$0" ;;
+  *) sed -n '2,14p' "$0" ;;
 esac
